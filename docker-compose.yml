@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: weather-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "@Anil89!"
+      MYSQL_DATABASE: weather_app_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    image: anilambati809/weather-backend:latest
+    container_name: weather-backend
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/weather_app_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: "@Anil89!"
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+
+  frontend:
+    image: anilambati809/weather-frontend:latest
+    container_name: weather-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  mysql_data:
